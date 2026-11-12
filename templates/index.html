@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iLiFE! 全曲イントロクイズ 💖🎵</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="bg-hearts"></div>
+
+  <div class="app-container">
+    <!-- ヘッダー -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-heart">💖</span>
+        <div class="logo-text">
+          <h1>iLiFE! <span>INTRO QUIZ</span></h1>
+          <p class="sub">私（i）と貴方（！）で作るアイドルイントロドン！</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="soundTestBtn" class="pill-btn light" title="スピーカー・イヤホンの音が出るかテスト">
+          <span class="icon">🔊</span>
+          <span class="label">音テスト</span>
+        </button>
+        <button id="songListBtn" class="pill-btn light" title="全曲図鑑">
+          <span class="icon">📖</span>
+          <span class="label">楽曲図鑑 (<span id="headerSongCount">29</span>曲)</span>
+        </button>
+        <button id="rankingBtn" class="pill-btn highlight" title="ランキング">
+          <span class="icon">👑</span>
+          <span class="label">ランキング</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+      
+      <!-- 1. スタート画面 -->
+      <section id="startScreen" class="quiz-card glass">
+        <div class="card-badge">DATABASE POWERED</div>
+        <h2 class="welcome-title">全楽曲から出題！<br><span class="accent-pink">iLiFE! イントロクイズ</span></h2>
+        <p class="welcome-desc">
+          『アイドルライフスターターパック』から最新曲まで！<br>
+          流れるイントロの音を聴いて、4つの選択肢から素早く選ぼう！
+        </p>
+
+        <div class="rules-box">
+          <div class="rule-item">
+            <span class="rule-icon">⚡</span>
+            <div><strong>スピード命:</strong> 早く回答するほどタイムボーナスGET！</div>
+          </div>
+          <div class="rule-item">
+            <span class="rule-icon">🔥</span>
+            <div><strong>コンボ倍率:</strong> 連続正解でスコアがさらにアップ！</div>
+          </div>
+          <div class="rule-item">
+            <span class="rule-icon">💡</span>
+            <div><strong>ヒント機能:</strong> 迷ったら「ヒント」で収録アルバムや歌詞を確認！</div>
+          </div>
+        </div>
+
+        <!-- 出題数モード選択 -->
+        <div class="mode-selector">
+          <span class="mode-label">出題数モード:</span>
+          <div class="mode-options">
+            <button class="mode-btn active" data-count="10">10 問</button>
+            <button class="mode-btn" data-count="20">20 問</button>
+            <button class="mode-btn" data-count="50">50 問 (超特盛)</button>
+          </div>
+        </div>
+
+        <div class="start-actions">
+          <button id="startQuizBtn" class="btn-primary pulse">
+            <span>クイズ開始！ 💖</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. クイズプレイ画面 -->
+      <section id="quizScreen" class="quiz-card glass hidden">
+        <div class="quiz-top-hud">
+          <div class="hud-left">
+            <span class="q-badge">第 <span id="currentQNum">1</span> / 10 問</span>
+            <span id="comboBadge" class="combo-badge hidden">0 COMBO 🔥</span>
+          </div>
+          <div class="hud-right">
+            <span class="score-display">SCORE: <strong id="scoreVal">0</strong></span>
+          </div>
+        </div>
+
+        <!-- タイマーバー -->
+        <div class="timer-container">
+          <div id="timerBar" class="timer-bar"></div>
+        </div>
+
+        <!-- イントロ再生プレイヤーエリア -->
+        <div class="player-card">
+          <div class="equalizer" id="equalizer">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <p id="playerStatus" class="player-status">イントロを再生中... 🎵</p>
+
+          <div class="player-controls">
+            <button id="replayBtn" class="control-btn play-highlight">
+              <span>▶ イントロを再生 / もう一度聴く</span>
+            </button>
+            <button id="hintBtn" class="control-btn ghost">
+              <span>💡 ヒントを見る</span>
+            </button>
+          </div>
+
+          <div id="hintBox" class="hint-box hidden">
+            <p><strong>💿 収録:</strong> <span id="hintAlbum">-</span> (<span id="hintYear">-</span>年)</p>
+            <p><strong>💬 一言:</strong> <span id="hintText">-</span></p>
+          </div>
+        </div>
+
+        <!-- 4択選択肢 -->
+        <div id="choicesGrid" class="choices-grid">
+          <button class="choice-btn" data-index="0">
+            <span class="choice-num">1</span>
+            <span class="choice-text">選択肢1</span>
+          </button>
+          <button class="choice-btn" data-index="1">
+            <span class="choice-num">2</span>
+            <span class="choice-text">選択肢2</span>
+          </button>
+          <button class="choice-btn" data-index="2">
+            <span class="choice-num">3</span>
+            <span class="choice-text">選択肢3</span>
+          </button>
+          <button class="choice-btn" data-index="3">
+            <span class="choice-num">4</span>
+            <span class="choice-text">選択肢4</span>
+          </button>
+        </div>
+
+        <!-- 回答結果ポップアップ -->
+        <div id="resultFeedback" class="result-feedback hidden">
+          <div class="feedback-badge" id="feedbackBadge">正解！🎉</div>
+          
+          <div class="feedback-song-info">
+            <img id="feedbackArtwork" class="feedback-artwork" src="" alt="ジャケット">
+            <div class="feedback-text-info">
+              <h3 id="correctTitleDisplay" class="correct-title">曲名</h3>
+              <p id="feedbackDetail" class="feedback-detail"></p>
+            </div>
+          </div>
+
+          <div class="feedback-actions">
+            <button id="playFullBtn" class="control-btn ghost small">
+              <span>🎧 原曲の続きを聴く</span>
+            </button>
+            <button id="nextQBtn" class="btn-next">次の問題へ ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. リザルト画面 -->
+      <section id="resultScreen" class="quiz-card glass hidden">
+        <div class="card-badge">QUIZ FINISHED</div>
+        <h2 class="result-title">クイズ結果発表！💖</h2>
+        
+        <div class="title-rank-badge" id="titleRankBadge">称号: アイドル属性体感中</div>
+
+        <div class="stats-overview">
+          <div class="stat-main-box">
+            <span class="stat-main-label">FINAL SCORE</span>
+            <span id="finalScoreVal" class="stat-main-val">0</span>
+          </div>
+
+          <div class="stat-sub-grid">
+            <div class="stat-item">
+              <span class="s-label">正解数</span>
+              <span class="s-val"><strong id="finalCorrectVal">0</strong> / 10</span>
+            </div>
+            <div class="stat-item">
+              <span class="s-label">最大コンボ</span>
+              <span class="s-val" id="finalComboVal">0 🔥</span>
+            </div>
+            <div class="stat-item">
+              <span class="s-label">平均回答速度</span>
+              <span class="s-val" id="finalTimeVal">0.0s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- スコア登録フォーム -->
+        <form id="scoreForm" class="score-register-form">
+          <label for="playerNameInput">あなたの名前をランキングに登録！</label>
+          <div class="input-group">
+            <input type="text" id="playerNameInput" maxlength="12" placeholder="あなたの推し名 / ニックネーム" required>
+            <button type="submit" id="saveScoreBtn" class="btn-save">登録する</button>
+          </div>
+          <p id="saveMsg" class="save-msg"></p>
+        </form>
+
+        <div class="result-buttons">
+          <button id="retryQuizBtn" class="btn-primary">
+            <span>もう一度挑戦する！ (RETRY)</span>
+          </button>
+          <button id="viewLeaderboardBtn" class="btn-secondary">
+            <span>ランキングを確認</span>
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- モーダル: 楽曲図鑑 -->
+    <div id="songsModal" class="modal-overlay hidden">
+      <div class="modal-card glass">
+        <div class="modal-header">
+          <h3>📖 iLiFE! 収録楽曲データベース (<span id="modalSongCount">0</span>曲)</h3>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-note">データベースに登録されている全楽曲リストです。イントロクイズで出題されます！</p>
+          <div id="songsTableContainer" class="songs-table-container">
+            <table class="songs-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>曲名</th>
+                  <th>収録アルバム</th>
+                  <th>年</th>
+                  <th>紹介・コール</th>
+                </tr>
+              </thead>
+              <tbody id="songsTableBody">
+                <!-- JSで動的生成 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- モーダル: ランキング -->
+    <div id="rankingModal" class="modal-overlay hidden">
+      <div class="modal-card glass">
+        <div class="modal-header">
+          <h3>👑 アイライファー ランキング (TOP 10)</h3>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <ol id="leaderboardList" class="leaderboard-list">
+            <li class="loading">ランキングを読み込み中...</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- フッター -->
+    <footer class="app-footer">
+      <p>iLiFE! All Songs Intro Quiz &copy; 2026 - Powered by Python & SQLite</p>
+    </footer>
+  </div>
+
+  <script src="/static/js/synth_player.js"></script>
+  <script src="/static/js/quiz.js"></script>
+</body>
+</html>
